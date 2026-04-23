@@ -580,7 +580,17 @@ function update(){
 
 function animate(){
   requestAnimationFrame(animate);
-  if(state!=='menu')update();
+  time+=.016;
+  // Always animate ambient stuff
+  clouds.forEach((c,i)=>{c.position.x+=.02*(i%2?1:-1);if(c.position.x>300)c.position.x=-300;if(c.position.x<-300)c.position.x=300});
+  waterMesh.material.opacity=.65+Math.sin(time*2)*.1;
+  fl.rotation.y=Math.sin(time*4)*.15;
+  if(state!=='menu'&&state!=='done')update();
+  // Menu camera
+  if(state==='menu'){
+    camera.position.set(Math.sin(time*.3)*30,15,Math.cos(time*.3)*30-100);
+    camera.lookAt(0,0,-100);
+  }
   renderer.render(scene,camera);
 }
 animate();
