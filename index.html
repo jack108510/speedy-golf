@@ -6,288 +6,360 @@
 <title>Speedy Golf</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#1a1a2e;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;touch-action:none}
-canvas{display:block;position:absolute;top:0;left:0}
-#hud{position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;color:#fff;font-size:14px;z-index:10}
-.hud-box{background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;backdrop-filter:blur(4px)}
-#powerbar{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:200px;background:rgba(0,0,0,.6);border-radius:15px;border:2px solid rgba(255,255,255,.2);overflow:hidden;z-index:10;opacity:0;transition:opacity .15s}
-#powerfill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#22c55e,#eab308,#ef4444);border-radius:13px;transition:height .02s}
-#swingbtn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-tap-highlight-color:transparent}
-#swingbtn:active{background:rgba(255,255,255,.35);transform:translateX(-50%) scale(.95)}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;touch-action:none}
+canvas{display:block}
+#hud{position:absolute;top:0;left:0;right:0;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;color:#fff;font-size:13px;z-index:10}
+.hb{background:rgba(0,0,0,.55);padding:5px 14px;border-radius:16px;backdrop-filter:blur(6px)}
+#swingbtn{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.12);border:3px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;z-index:10;-webkit-tap-highlight-color:transparent}
+#swingbtn:active{background:rgba(255,255,255,.3);transform:translateX(-50%) scale(.94)}
+#pbar{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:28px;height:180px;background:rgba(0,0,0,.55);border-radius:14px;border:2px solid rgba(255,255,255,.15);overflow:hidden;z-index:10;opacity:0;transition:opacity .15s}
+#pfill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#22c55e,#eab308,#ef4444);border-radius:12px}
+#sbar{position:absolute;left:50%;bottom:108px;transform:translateX(-50%);width:180px;height:20px;background:rgba(0,0,0,.55);border-radius:10px;border:2px solid rgba(255,255,255,.15);z-index:10;opacity:0;transition:opacity .15s}
+#sneedle{position:absolute;top:2px;bottom:2px;width:3px;background:#fff;border-radius:2px;left:50%}
+#slbl{position:absolute;left:50%;bottom:134px;transform:translateX(-50%);color:#fff;font-size:10px;font-weight:600;z-index:10;opacity:0;transition:opacity .15s;letter-spacing:1px}
+#phase{position:absolute;bottom:128px;left:50%;transform:translateX(-50%);color:#fff;font-size:11px;font-weight:600;z-index:10;letter-spacing:1px;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.6);transition:opacity .15s}
+#wind{position:absolute;top:46px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.5);font-size:11px;z-index:10;pointer-events:none}
 #overlay{position:absolute;inset:0;background:rgba(0,0,0,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:20}
-#overlay h1{font-size:28px;margin-bottom:8px}
-#overlay p{font-size:14px;opacity:.7;margin-bottom:24px;text-align:center;max-width:280px;line-height:1.6}
-#overlay button{padding:14px 40px;border-radius:30px;border:none;background:#22c55e;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
-#overlay button:active{background:#16a34a}
-#spinbar{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);width:200px;height:24px;background:rgba(0,0,0,.6);border-radius:12px;border:2px solid rgba(255,255,255,.2);z-index:10;opacity:0;transition:opacity .15s}
-#spinneedle{position:absolute;top:2px;bottom:2px;width:4px;background:#fff;border-radius:2px;left:50%;transition:left .03s}
-#spinlabel{position:absolute;left:50%;bottom:140px;transform:translateX(-50%);color:#fff;font-size:11px;font-weight:600;z-index:10;opacity:0;transition:opacity .15s;letter-spacing:1px}
-#wind{position:absolute;top:50px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;z-index:10;opacity:.6;pointer-events:none}
-#status{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;font-weight:600;z-index:10;opacity:0;transition:opacity .15s;letter-spacing:1px;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+#overlay h1{font-size:26px;margin-bottom:6px}
+#overlay p{font-size:13px;opacity:.6;margin-bottom:20px;text-align:center;max-width:260px;line-height:1.6}
+#overlay button{padding:12px 36px;border-radius:24px;border:none;background:#22c55e;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
 <div id="hud">
-  <div class="hud-box">Hole 1 · Par 4</div>
-  <div class="hud-box" id="strokeInfo">Stroke: 0</div>
-  <div class="hud-box" id="distInfo">0 yds</div>
+  <div class="hb">Hole 1 · Par 4</div>
+  <div class="hb" id="si">Stroke: 0</div>
+  <div class="hb" id="di">0 yds</div>
 </div>
 <div id="wind"></div>
-<div id="status">AIM</div>
-<div id="powerbar"><div id="powerfill"></div></div>
-<div id="spinbar"><div id="spinneedle"></div></div>
-<div id="spinlabel">SPIN</div>
+<div id="phase"></div>
+<div id="pbar"><div id="pfill"></div></div>
+<div id="sbar"><div id="sneedle"></div></div>
+<div id="slbl">SPIN</div>
 <div id="swingbtn">SWING</div>
 <div id="overlay">
-  <h1>⛳ Speedy Golf</h1>
+  <h1>⛳ Speedy Golf 3D</h1>
   <p>3-click swing: Aim → Power → Spin<br>Tap SWING or press SPACE</p>
   <button id="startBtn">Tee Off</button>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const C=document.getElementById('game'),X=C.getContext('2d');
-const powerbar=document.getElementById('powerbar'),powerfill=document.getElementById('powerfill');
-const spinbar=document.getElementById('spinbar'),spinneedle=document.getElementById('spinneedle');
-const spinlabel=document.getElementById('spinlabel');
-const swingbtn=document.getElementById('swingbtn');
-const hudStroke=document.getElementById('strokeInfo');
-const hudDist=document.getElementById('distInfo');
-const overlay=document.getElementById('overlay');
-const startBtn=document.getElementById('startBtn');
-const statusEl=document.getElementById('status');
-const windEl=document.getElementById('wind');
+// Three.js setup
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x87CEEB);
+scene.fog=new THREE.Fog(0x87CEEB,200,500);
+const camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+document.body.prepend(renderer.domElement);
 
-let W,H;
-function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight}
-window.addEventListener('resize',resize);resize();
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
 
-// Course
-const tee={x:200,y:620},flag={x:200,y:80};
-const fairway=[{x:100,y:80,w:200,h:570}];
-const green={x:140,y:40,w:120,h:90};
-const sand=[{x:115,y:380,w:45,h:40},{x:255,y:250,w:40,h:35}];
-const water=[{x:240,y:460,w:65,h:55}];
-const trees=[{x:50,y:200,r:18},{x:345,y:150,r:22},{x:55,y:500,r:15},{x:340,y:400,r:20},{x:145,y:300,r:12},{x:285,y:510,r:14}];
+// Lighting
+const amb=new THREE.AmbientLight(0xffffff,.5);scene.add(amb);
+const dir=new THREE.DirectionalLight(0xffffff,.8);
+dir.position.set(50,80,30);dir.castShadow=true;
+dir.shadow.mapSize.set(1024,1024);dir.shadow.camera.left=-100;dir.shadow.camera.right=100;
+dir.shadow.camera.top=100;dir.shadow.camera.bottom=-100;scene.add(dir);
+const hemi=new THREE.HemisphereLight(0x87CEEB,0x2d5a27,.3);scene.add(hemi);
 
-let ball={x:0,y:0,vx:0,vy:0};
+// Ground
+const groundGeo=new THREE.PlaneGeometry(400,600);
+const groundMat=new THREE.MeshLambertMaterial({color:0x2d5a27});
+const ground=new THREE.Mesh(groundGeo,groundMat);
+ground.rotation.x=-Math.PI/2;ground.position.set(0,0,0);ground.receiveShadow=true;scene.add(ground);
+
+// Fairway
+const fwGeo=new THREE.PlaneGeometry(60,400);
+const fwMat=new THREE.MeshLambertMaterial({color:0x4a8c3f});
+const fw=new THREE.Mesh(fwGeo,fwMat);
+fw.rotation.x=-Math.PI/2;fw.position.set(0,0,-50);fw.receiveShadow=true;scene.add(fw);
+
+// Green (elevated slightly)
+const grGeo=new THREE.CircleGeometry(18,32);
+const grMat=new THREE.MeshLambertMaterial({color:0x5cb85c});
+const green3d=new THREE.Mesh(grGeo,grMat);
+green3d.rotation.x=-Math.PI/2;green3d.position.set(0,.05,-200);green3d.receiveShadow=true;scene.add(green3d);
+
+// Hole
+const holeGeo=new THREE.CylinderGeometry(1.2,1.2,.3,16);
+const holeMat=new THREE.MeshLambertMaterial({color:0x111111});
+const hole3d=new THREE.Mesh(holeGeo,holeMat);
+hole3d.position.set(0,.01,-200);scene.add(hole3d);
+
+// Flag pole
+const poleGeo=new THREE.CylinderGeometry(.1,.1,8,8);
+const poleMat=new THREE.MeshLambertMaterial({color:0xffffff});
+const pole=new THREE.Mesh(poleGeo,poleMat);
+pole.position.set(0,4,-200);scene.add(pole);
+const flagGeo=new THREE.BufferGeometry();
+const fv=new Float32Array([0,0,0, 0,3,0, 3,1.5,0]);
+flagGeo.setAttribute('position',new THREE.BufferAttribute(fv,3));
+flagGeo.computeVertexNormals();
+const flagMat=new THREE.MeshLambertMaterial({color:0xef4444,side:THREE.DoubleSide});
+const flag=new THREE.Mesh(flagGeo,flagMat);
+flag.position.set(0,6,-200);scene.add(flag);
+
+// Tee box
+const tbGeo=new THREE.BoxGeometry(10,.15,3);
+const tbMat=new THREE.MeshLambertMaterial({color:0x8B7355});
+const teebox=new THREE.Mesh(tbGeo,tbMat);
+teebox.position.set(0,.08,100);scene.add(teebox);
+
+// Sand traps
+function makeSand(x,z,rx,rz){
+  const g=new THREE.CylinderGeometry(rx,rz,.3,16);
+  const m=new THREE.MeshLambertMaterial({color:0xe8d68c});
+  const s=new THREE.Mesh(g,m);s.position.set(x,.05,z);s.receiveShadow=true;scene.add(s);
+}
+makeSand(-18,-80,7,6);
+makeSand(20,-120,6,5);
+
+// Water hazard
+const wGeo=new THREE.CircleGeometry(10,24);
+const wMat=new THREE.MeshLambertMaterial({color:0x3b82f6,transparent:true,opacity:.8});
+const water3d=new THREE.Mesh(wGeo,wMat);
+water3d.rotation.x=-Math.PI/2;water3d.position.set(18,.02,-30);scene.add(water3d);
+
+// Trees
+function makeTree(x,z,s){
+  s=s||1;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.4*s,.5*s,4*s,6),new THREE.MeshLambertMaterial({color:0x3d2b1f}));
+  trunk.position.set(x,2*s,z);trunk.castShadow=true;scene.add(trunk);
+  const leaves=new THREE.Mesh(new THREE.SphereGeometry(3*s,8,6),new THREE.MeshLambertMaterial({color:0x2d7a2d}));
+  leaves.position.set(x,5*s,z);leaves.castShadow=true;scene.add(leaves);
+}
+makeTree(-40,-40,1.2);makeTree(40,-60,1.5);makeTree(-35,-160,1);makeTree(38,-140,1.3);
+makeTree(-50,20,1.1);makeTree(45,40,1.4);makeTree(-30,60,.9);makeTree(50,-180,1.1);
+
+// Ball
+const ballGeo=new THREE.SphereGeometry(.5,16,12);
+const ballMat=new THREE.MeshPhongMaterial({color:0xffffff,shininess:100});
+const ball3d=new THREE.Mesh(ballGeo,ballMat);
+ball3d.castShadow=true;scene.add(ball3d);
+ball3d.position.set(0,.5,100);
+
+// Aim arrow
+const arrowGeo=new THREE.BufferGeometry();
+const av=new Float32Array([0,0,0, 0,0,-15]);
+arrowGeo.setAttribute('position',new THREE.BufferAttribute(av,3));
+const arrowMat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.6});
+const arrow=new THREE.Line(arrowGeo,arrowMat);
+arrow.position.copy(ball3d.position);scene.add(arrow);
+
+// Game state
+const TEE=new THREE.Vector3(0,.5,100);
+const FLAG=new THREE.Vector3(0,0,-200);
 let state='menu',stroke=0;
 let aimAngle=0,aimDir=1;
 let powerLevel=0,powerDir=1;
 let spinLevel=0,spinDir=1;
 let windSpeed=0,windDir=0;
-let trail=[];
+let ballVx=0,ballVy=0,ballVz=0;
+let camAngle=Math.PI,camDist=12,camHeight=6;
+let targetCamAngle=Math.PI;
 
-function resetBall(){ball.x=tee.x;ball.y=tee.y;ball.vx=0;ball.vy=0;trail=[]}
+const pbar=document.getElementById('pbar');
+const pfill=document.getElementById('pfill');
+const sbar=document.getElementById('sbar');
+const sneedle=document.getElementById('sneedle');
+const slbl=document.getElementById('slbl');
+const swingbtn=document.getElementById('swingbtn');
+const si=document.getElementById('si');
+const di=document.getElementById('di');
+const overlay=document.getElementById('overlay');
+const startBtn=document.getElementById('startBtn');
+const phase=document.getElementById('phase');
+const windEl=document.getElementById('wind');
 
 startBtn.onclick=function(){
   overlay.style.display='none';
-  resetBall();stroke=0;
-  hudStroke.textContent='Stroke: 0';
-  windSpeed=2+Math.random()*8;
-  windDir=(Math.random()-.5)*.5;
-  windEl.textContent='💨 Wind: '+Math.round(windSpeed)+' mph '+(windDir>0?'→':'←');
-  state='aim';
-  showStatus('AIM');
+  ball3d.position.copy(TEE);ballVx=0;ballVy=0;ballVz=0;
+  stroke=0;si.textContent='Stroke: 0';
+  windSpeed=1+Math.random()*5;windDir=(Math.random()-.5)*.4;
+  windEl.textContent='💨 '+Math.round(windSpeed*2.2)+' mph '+(windDir>0?'→':'←');
+  state='aim';phase.textContent='AIM';phase.style.opacity='1';
+  pbar.style.opacity='0';sbar.style.opacity='0';slbl.style.opacity='0';
+  camAngle=Math.PI;targetCamAngle=Math.PI;
 };
-
-function showStatus(txt){statusEl.textContent=txt;statusEl.style.opacity=txt?'1':'0'}
 
 function doSwing(){
   if(state==='aim'){
     state='power';powerLevel=0;powerDir=1;
-    showStatus('POWER');
+    phase.textContent='POWER';pbar.style.opacity='1';
   }else if(state==='power'){
     state='spin';spinLevel=0;spinDir=1;
-    powerbar.style.opacity='0';
-    spinbar.style.opacity='1';spinlabel.style.opacity='1';
-    showStatus('SPIN');
+    phase.textContent='SPIN';pbar.style.opacity='0';
+    sbar.style.opacity='1';slbl.style.opacity='1';
   }else if(state==='spin'){
-    state='fly';stroke++;
-    hudStroke.textContent='Stroke: '+stroke;
-    spinbar.style.opacity='0';spinlabel.style.opacity='0';
-    showStatus('');
-    
-    const speed=powerLevel*12+4;
-    ball.vx=Math.sin(aimAngle)*speed;
-    ball.vy=-Math.cos(aimAngle)*speed;
-    const spinForce=(spinLevel-.5)*3;
-    ball.vx+=spinForce;
-    trail=[];
+    launch();
   }
 }
 
+function launch(){
+  state='fly';stroke++;si.textContent='Stroke: '+stroke;
+  phase.textContent='';phase.style.opacity='0';
+  sbar.style.opacity='0';slbl.style.opacity='0';
+  arrow.visible=false;
+  
+  const speed=powerLevel*1.8+.4;
+  const spinF=(spinLevel-.5)*.3;
+  ballVx=Math.sin(aimAngle)*speed+spinF;
+  ballVy=.5+powerLevel*.3;
+  ballVz=-Math.cos(aimAngle)*speed;
+}
+
 swingbtn.addEventListener('click',doSwing);
-swingbtn.addEventListener('touchstart',function(e){e.preventDefault();doSwing()},{passive:false});
-document.addEventListener('keydown',function(e){if(e.code==='Space'){e.preventDefault();doSwing()}});
+swingbtn.addEventListener('touchstart',e=>{e.preventDefault();doSwing()},{passive:false});
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();doSwing()}});
 
-function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2)}
-function onGreen(p){return p.x>green.x&&p.x<green.x+green.w&&p.y>green.y&&p.y<green.y+green.h}
-function onSand(p){return sand.some(s=>p.x>s.x&&p.x<s.x+s.w&&p.y>s.y&&p.y<s.y+s.h)}
-function onWater(p){return water.some(w=>p.x>w.x&&p.x<w.x+w.w&&p.y>w.y&&p.y<w.y+w.h)}
-
-function showResult(text){
-  setTimeout(function(){
+function showResult(txt){
+  state='done';
+  setTimeout(()=>{
     overlay.querySelector('h1').textContent='⛳ Hole Complete!';
-    overlay.querySelector('p').textContent=text;
+    overlay.querySelector('p').textContent=txt;
     startBtn.textContent='Play Again';
     overlay.style.display='flex';
-    state='menu';
     startBtn.onclick=function(){
       overlay.style.display='none';
-      resetBall();stroke=0;
-      hudStroke.textContent='Stroke: 0';
-      windSpeed=2+Math.random()*8;windDir=(Math.random()-.5)*.5;
-      windEl.textContent='💨 Wind: '+Math.round(windSpeed)+' mph '+(windDir>0?'→':'←');
-      state='aim';showStatus('AIM');
+      ball3d.position.copy(TEE);ballVx=0;ballVy=0;ballVz=0;
+      stroke=0;si.textContent='Stroke: 0';
+      state='aim';phase.textContent='AIM';phase.style.opacity='1';
+      pbar.style.opacity='0';sbar.style.opacity='0';slbl.style.opacity='0';
+      arrow.visible=true;camAngle=Math.PI;targetCamAngle=Math.PI;
       startBtn.textContent='Tee Off';
     };
-  },800);
+  },1200);
 }
 
 function update(){
   if(state==='aim'){
-    aimAngle+=aimDir*.03;
+    aimAngle+=aimDir*.025;
     if(aimAngle>.7)aimDir=-1;if(aimAngle<-.7)aimDir=1;
-    powerbar.style.opacity='0';
+    arrow.visible=true;
+    arrow.position.copy(ball3d.position);arrow.position.y=.8;
+    arrow.rotation.y=aimAngle;
+    pbar.style.opacity='0';
   }
   if(state==='power'){
-    powerLevel+=powerDir*.022;
+    powerLevel+=powerDir*.02;
     if(powerLevel>=1){powerLevel=1;powerDir=-1}
     if(powerLevel<=0){powerLevel=0;powerDir=1}
-    powerfill.style.height=(powerLevel*100)+'%';
-    powerbar.style.opacity='1';
+    pfill.style.height=(powerLevel*100)+'%';
   }
   if(state==='spin'){
-    spinLevel+=spinDir*.03;
+    spinLevel+=spinDir*.028;
     if(spinLevel>=1){spinLevel=1;spinDir=-1}
     if(spinLevel<=0){spinLevel=0;spinDir=1}
-    spinneedle.style.left=(spinLevel*96+2)+'%';
+    sneedle.style.left=(spinLevel*94+3)+'%';
   }
   if(state==='fly'){
-    trail.push({x:ball.x,y:ball.y});
-    if(trail.length>40)trail.shift();
+    ballVy-=.012; // gravity
+    ballVx+=windDir*windSpeed*.0003;
+    ball3d.position.x+=ballVx;
+    ball3d.position.y+=ballVy;
+    ball3d.position.z+=ballVz;
     
-    ball.vy+=.15;
-    ball.vx+=windDir*windSpeed*.002;
-    ball.x+=ball.vx;
-    ball.y+=ball.vy;
-    
-    // Check hole
-    if(dist(ball,flag)<12&&Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy)<6){
-      const s=stroke-4;
-      const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
-      state='done';showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
-    }
-    
-    // Tree bounce
-    for(const t of trees){
-      if(dist(ball,t)<t.r+4){
-        ball.vx*=-.4;ball.vy*=-.3;
-        ball.x+=ball.vx*2;ball.y+=ball.vy*2;
-        break;
+    // Ground bounce
+    if(ball3d.position.y<=.5){
+      ball3d.position.y=.5;
+      ballVy=-ballVy*.3;
+      ballVx*=.7;ballVz*=.7;
+      if(Math.abs(ballVy)<.03){
+        ballVy=0;state='roll';
       }
     }
     
-    // Ground hit
-    if(ball.vy>0&&ball.y>=flag.y-10){
-      state='roll';ball.vy=0;
+    // Hole check
+    const dx=ball3d.position.x-FLAG.x,dz=ball3d.position.z-FLAG.z;
+    const hd=Math.sqrt(dx*dx+dz*dz);
+    if(hd<2&&ball3d.position.y<1.5){
+      const spd=Math.sqrt(ballVx*ballVx+ballVz*ballVz);
+      if(spd<.8){
+        ball3d.position.set(FLAG.x,.3,FLAG.z);
+        const s=stroke-4;
+        const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
+        showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
+      }
     }
-    // OB check
-    if(ball.x<-10||ball.x>410||ball.y<0||ball.y>680){
-      state='roll';ball.vy=0;
+    
+    // Water
+    const wx=ball3d.position.x-18,wz=ball3d.position.z+30;
+    if(Math.sqrt(wx*wx+wz*wz)<9&&ball3d.position.y<1){
+      stroke++;si.textContent='Stroke: '+stroke;
+      showResult('💧 Water Hazard! +1 penalty — '+stroke+' strokes');return;
+    }
+    
+    // OB
+    if(ball3d.position.y<-2||Math.abs(ball3d.position.x)>80||ball3d.position.z>130||ball3d.position.z<-260){
+      stroke++;si.textContent='Stroke: '+stroke;
+      showResult('OB! +1 penalty — '+stroke+' strokes');return;
     }
   }
   if(state==='roll'){
-    const f=onGreen(ball)?.955:onSand(ball)?.91:.972;
-    ball.vx*=f;ball.vy*=f;
-    ball.x+=ball.vx;ball.y+=ball.vy;
+    const onG=Math.sqrt((ball3d.position.x)**2+(ball3d.position.z+200)**2)<18;
+    const friction=onG?.992:.985;
+    ballVx*=friction;ballVz*=friction;
+    ball3d.position.x+=ballVx;ball3d.position.z+=ballVz;
+    ball3d.position.y=.5;
     
-    // Water check
-    if(onWater(ball)){
-      stroke++;hudStroke.textContent='Stroke: '+stroke;
-      state='done';showResult('💧 Water Hazard! +1 penalty — '+stroke+' strokes');return;
-    }
-    // Hole check
-    if(dist(ball,flag)<12&&Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy)<5){
-      const s=stroke-4;
-      const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
-      state='done';showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
-    }
-    // Stopped
-    if(Math.abs(ball.vx)<.04&&Math.abs(ball.vy)<.04){
-      ball.vx=0;ball.vy=0;
-      if(ball.x<0||ball.x>400||ball.y>670||ball.y<0){
-        stroke++;hudStroke.textContent='Stroke: '+stroke;
-        state='done';showResult('Out of Bounds! +1 penalty — '+stroke+' strokes');return;
+    // Hole
+    const dx=ball3d.position.x-FLAG.x,dz=ball3d.position.z-FLAG.z;
+    const hd=Math.sqrt(dx*dx+dz*dz);
+    if(hd<2){
+      const spd=Math.sqrt(ballVx*ballVx+ballVz*ballVz);
+      if(spd<.6){
+        ball3d.position.set(FLAG.x,.3,FLAG.z);
+        const s=stroke-4;
+        const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
+        showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
       }
-      state='aim';showStatus('AIM');
+    }
+    if(Math.abs(ballVx)<.002&&Math.abs(ballVz)<.002){
+      ballVx=0;ballVz=0;
+      state='aim';phase.textContent='AIM';phase.style.opacity='1';
+      arrow.visible=true;
+      // Camera faces toward hole from new position
+      targetCamAngle=Math.atan2(ball3d.position.x-FLAG.x,ball3d.position.z-FLAG.z);
     }
   }
-  if(state!=='menu'&&state!=='done'){
-    hudDist.textContent=Math.round(dist(ball,flag)*.5)+' yds';
-  }
-}
-
-function draw(){
-  X.clearRect(0,0,W,H);
-  const sc=Math.min(W/400,H/700);
-  const ox=(W-400*sc)/2,oy=(H-700*sc)/2;
-  X.save();X.translate(ox,oy);X.scale(sc,sc);
   
-  // Rough
-  X.fillStyle='#2d5a27';X.fillRect(-10,-10,420,720);
-  // Fairway
-  X.fillStyle='#4a8c3f';
-  fairway.forEach(f=>X.fillRect(f.x,f.y,f.w,f.h));
-  // Sand
-  X.fillStyle='#e8d68c';
-  sand.forEach(s=>{X.beginPath();X.ellipse(s.x+s.w/2,s.y+s.h/2,s.w/2,s.h/2,0,0,Math.PI*2);X.fill()});
-  // Water
-  X.fillStyle='#3b82f6';
-  water.forEach(w=>{X.beginPath();X.ellipse(w.x+w.w/2,w.y+w.h/2,w.w/2,w.h/2,0,0,Math.PI*2);X.fill()});
-  // Green
-  X.fillStyle='#5cb85c';X.fillRect(green.x,green.y,green.w,green.h);
-  X.strokeStyle='#4a9e4a';X.lineWidth=2;X.strokeRect(green.x,green.y,green.w,green.h);
-  // Hole
-  X.fillStyle='#111';X.beginPath();X.arc(flag.x,flag.y,8,0,Math.PI*2);X.fill();
-  // Flag
-  X.strokeStyle='#fff';X.lineWidth=2;X.beginPath();X.moveTo(flag.x,flag.y);X.lineTo(flag.x,flag.y-35);X.stroke();
-  X.fillStyle='#ef4444';X.beginPath();X.moveTo(flag.x,flag.y-35);X.lineTo(flag.x+18,flag.y-28);X.lineTo(flag.x,flag.y-21);X.fill();
-  // Tee
-  X.fillStyle='#8B7355';X.fillRect(tee.x-25,tee.y-5,50,10);
-  // Trees
-  trees.forEach(t=>{
-    X.fillStyle='#3d2b1f';X.fillRect(t.x-3,t.y+5,6,t.r);
-    X.fillStyle='#2d7a2d';X.beginPath();X.arc(t.x,t.y,t.r,0,Math.PI*2);X.fill();
-    X.fillStyle='#1f6b1f';X.beginPath();X.arc(t.x-3,t.y-3,t.r*.55,0,Math.PI*2);X.fill();
-  });
-  // Trail
-  if(trail.length>1){
-    X.strokeStyle='rgba(255,255,255,.25)';X.lineWidth=1;X.setLineDash([3,3]);
-    X.beginPath();trail.forEach((p,i)=>{i?X.lineTo(p.x,p.y):X.moveTo(p.x,p.y)});X.stroke();X.setLineDash([]);
-  }
-  // Ball
+  // Camera
   if(state!=='menu'&&state!=='done'){
-    X.fillStyle='#fff';X.beginPath();X.arc(ball.x,ball.y,6,0,Math.PI*2);X.fill();
-    X.strokeStyle='#ddd';X.lineWidth=1;X.stroke();
+    const bx=ball3d.position.x,bz=ball3d.position.z;
+    if(state==='aim'){
+      // Behind ball looking toward hole
+      camAngle+=(targetCamAngle-camAngle)*.05;
+    }else{
+      // Follow ball
+      targetCamAngle=Math.atan2(bx-camera.position.x,bz-camera.position.z);
+      camAngle+=(targetCamAngle-camAngle)*.03;
+    }
+    const dist=state==='fly'?18:12;
+    const height=state==='fly'?10:6;
+    camera.position.set(bx+Math.sin(camAngle)*dist,height,bz+Math.cos(camAngle)*dist);
+    camera.lookAt(bx,0,bz);
+    
+    // Distance to hole
+    const dd=Math.sqrt((bx-FLAG.x)**2+(bz-FLAG.z)**2);
+    di.textContent=Math.round(dd*2.5)+' yds';
   }
-  // Aim arrow
-  if(state==='aim'){
-    X.strokeStyle='rgba(255,255,255,.5)';X.lineWidth=2;X.setLineDash([5,5]);
-    X.beginPath();X.moveTo(ball.x,ball.y);
-    const len=70;
-    X.lineTo(ball.x+Math.sin(aimAngle)*len,ball.y-Math.cos(aimAngle)*len);X.stroke();X.setLineDash([]);
-    X.fillStyle='rgba(255,255,255,.7)';X.beginPath();
-    X.arc(ball.x+Math.sin(aimAngle)*len,ball.y-Math.cos(aimAngle)*len,4,0,Math.PI*2);X.fill();
-  }
-  X.restore();
 }
 
-function loop(){
-  if(state!=='menu'){update();draw()}
-  requestAnimationFrame(loop);
+function animate(){
+  requestAnimationFrame(animate);
+  if(state!=='menu')update();
+  // Flag wave
+  flag.rotation.y=Math.sin(Date.now()*.003)*.2;
+  renderer.render(scene,camera);
 }
-loop();
+animate();
 </script>
 </body>
 </html>
