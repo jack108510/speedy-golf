@@ -7,301 +7,279 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#1a1a2e;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;touch-action:none}
-canvas{display:block;width:100%;height:100%}
+canvas{display:block;position:absolute;top:0;left:0}
 #hud{position:absolute;top:0;left:0;right:0;padding:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;color:#fff;font-size:14px;z-index:10}
-.hud-box{background:rgba(0,0,0,.5);padding:6px 14px;border-radius:20px;backdrop-filter:blur(4px)}
-#powerbar{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:200px;background:rgba(0,0,0,.5);border-radius:15px;border:2px solid rgba(255,255,255,.2);overflow:hidden;z-index:10;opacity:0;transition:opacity .2s}
-#powerfill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#22c55e,#eab308,#ef4444);border-radius:13px;transition:height .03s}
-#aimline{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:30px;height:200px;background:rgba(0,0,0,.5);border-radius:15px;border:2px solid rgba(255,255,255,.2);z-index:10;opacity:0;transition:opacity .2s}
-#aimneedle{position:absolute;left:0;right:0;height:4px;background:#fff;border-radius:2px;top:50%;transition:top .05s}
-#swingbtn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-tap-highlight-color:transparent}
-#swingbtn:active{background:rgba(255,255,255,.3)}
-#overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:20}
+.hud-box{background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;backdrop-filter:blur(4px)}
+#powerbar{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:30px;height:200px;background:rgba(0,0,0,.6);border-radius:15px;border:2px solid rgba(255,255,255,.2);overflow:hidden;z-index:10;opacity:0;transition:opacity .15s}
+#powerfill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#22c55e,#eab308,#ef4444);border-radius:13px;transition:height .02s}
+#swingbtn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-tap-highlight-color:transparent}
+#swingbtn:active{background:rgba(255,255,255,.35);transform:translateX(-50%) scale(.95)}
+#overlay{position:absolute;inset:0;background:rgba(0,0,0,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:20}
 #overlay h1{font-size:28px;margin-bottom:8px}
-#overlay p{font-size:14px;opacity:.6;margin-bottom:24px;text-align:center;max-width:280px;line-height:1.5}
+#overlay p{font-size:14px;opacity:.7;margin-bottom:24px;text-align:center;max-width:280px;line-height:1.6}
 #overlay button{padding:14px 40px;border-radius:30px;border:none;background:#22c55e;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
-#spinbar{position:absolute;left:50%;bottom:100px;transform:translateX(-50%);width:200px;height:20px;background:rgba(0,0,0,.5);border-radius:10px;border:2px solid rgba(255,255,255,.2);z-index:10;opacity:0;transition:opacity .2s}
-#spinneedle{position:absolute;top:0;bottom:0;width:4px;background:#fff;border-radius:2px;left:50%;transition:left .04s}
-#spinlabel{position:absolute;left:50%;bottom:126px;transform:translateX(-50%);color:#fff;font-size:11px;font-weight:600;z-index:10;opacity:0;transition:opacity .2s}
-#wind{position:absolute;top:60px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;z-index:10;opacity:.7;pointer-events:none}
+#overlay button:active{background:#16a34a}
+#spinbar{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);width:200px;height:24px;background:rgba(0,0,0,.6);border-radius:12px;border:2px solid rgba(255,255,255,.2);z-index:10;opacity:0;transition:opacity .15s}
+#spinneedle{position:absolute;top:2px;bottom:2px;width:4px;background:#fff;border-radius:2px;left:50%;transition:left .03s}
+#spinlabel{position:absolute;left:50%;bottom:140px;transform:translateX(-50%);color:#fff;font-size:11px;font-weight:600;z-index:10;opacity:0;transition:opacity .15s;letter-spacing:1px}
+#wind{position:absolute;top:50px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;z-index:10;opacity:.6;pointer-events:none}
+#status{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);color:#fff;font-size:12px;font-weight:600;z-index:10;opacity:0;transition:opacity .15s;letter-spacing:1px;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
 <div id="hud">
-  <div class="hud-box" id="holeInfo">Hole 1 · Par 4</div>
+  <div class="hud-box">Hole 1 · Par 4</div>
   <div class="hud-box" id="strokeInfo">Stroke: 0</div>
   <div class="hud-box" id="distInfo">0 yds</div>
 </div>
-<div id="wind">💨 Wind: 5 mph →</div>
+<div id="wind"></div>
+<div id="status">AIM</div>
 <div id="powerbar"><div id="powerfill"></div></div>
-<div id="aimline"><div id="aimneedle"></div></div>
 <div id="spinbar"><div id="spinneedle"></div></div>
 <div id="spinlabel">SPIN</div>
 <div id="swingbtn">SWING</div>
 <div id="overlay">
   <h1>⛳ Speedy Golf</h1>
   <p>3-click swing: Aim → Power → Spin<br>Tap SWING or press SPACE</p>
-  <button onclick="startGame()">Tee Off</button>
+  <button id="startBtn">Tee Off</button>
 </div>
 <script>
 const C=document.getElementById('game'),X=C.getContext('2d');
 const powerbar=document.getElementById('powerbar'),powerfill=document.getElementById('powerfill');
-const aimline=document.getElementById('aimline'),aimneedle=document.getElementById('aimneedle');
 const spinbar=document.getElementById('spinbar'),spinneedle=document.getElementById('spinneedle');
 const spinlabel=document.getElementById('spinlabel');
 const swingbtn=document.getElementById('swingbtn');
 const hudStroke=document.getElementById('strokeInfo');
 const hudDist=document.getElementById('distInfo');
 const overlay=document.getElementById('overlay');
+const startBtn=document.getElementById('startBtn');
+const statusEl=document.getElementById('status');
 const windEl=document.getElementById('wind');
 
-let W,H,scale;
-function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight;scale=Math.min(W/400,H/700);if(state!=='done')draw()}
-window.addEventListener('resize',resize);
+let W,H;
+function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight}
+window.addEventListener('resize',resize);resize();
 
-// Course definition (1 hole)
-const HOLE={par:4};
-let tee,flag,ball,startPos,fairway,green,rough,sand,water,trees;
-function setupCourse(){
-  tee={x:200,y:620};flag={x:200,y:80};
-  ball={x:tee.x,y:tee.y,vx:0,vy:0,spin:0,rolling:false,inHole:false};
-  startPos={x:ball.x,y:ball.y};
-  fairway=[{x:100,y:100,w:200,h:560}];
-  green={x:150,y:50,w:100,h:80};
-  sand=[{x:120,y:380,w:40,h:40},{x:250,y:250,w:35,h:30}];
-  water=[{x:240,y:450,w:60,h:50}];
-  trees=[{x:50,y:200,r:18},{x:340,y:150,r:22},{x:60,y:500,r:15},{x:330,y:400,r:20},{x:150,y:300,r:12},{x:280,y:500,r:14}];
-}
+// Course
+const tee={x:200,y:620},flag={x:200,y:80};
+const fairway=[{x:100,y:80,w:200,h:570}];
+const green={x:140,y:40,w:120,h:90};
+const sand=[{x:115,y:380,w:45,h:40},{x:255,y:250,w:40,h:35}];
+const water=[{x:240,y:460,w:65,h:55}];
+const trees=[{x:50,y:200,r:18},{x:345,y:150,r:22},{x:55,y:500,r:15},{x:340,y:400,r:20},{x:145,y:300,r:12},{x:285,y:510,r:14}];
 
-// Game state
-let state='menu'; // menu,aim,power,spin,fly,roll,done
-let stroke=0,aimAngle=0,aimDir=1,aimSpeed:.03;
-let powerLevel=0,powerDir=1,powerSpeed:.025;
-let spinLevel=0,spinDir=1,spinSpeed=.035;
-let windSpeed=5,windAngle=0; // simplified: just horizontal push
+let ball={x:0,y:0,vx:0,vy:0};
+let state='menu',stroke=0;
+let aimAngle=0,aimDir=1;
+let powerLevel=0,powerDir=1;
+let spinLevel=0,spinDir=1;
+let windSpeed=0,windDir=0;
 let trail=[];
-let resultText='',resultTimer=0;
 
-function startGame(){
+function resetBall(){ball.x=tee.x;ball.y=tee.y;ball.vx=0;ball.vy=0;trail=[]}
+
+startBtn.onclick=function(){
   overlay.style.display='none';
-  setupCourse();
-  stroke=0;state='aim';
-  windSpeed=2+Math.random()*8;
-  windAngle=(Math.random()-.5)*.6;
-  windEl.textContent='💨 Wind: '+Math.round(windSpeed)+' mph '+(windAngle>0?'→':'←');
+  resetBall();stroke=0;
   hudStroke.textContent='Stroke: 0';
-  showAimUI();
-}
+  windSpeed=2+Math.random()*8;
+  windDir=(Math.random()-.5)*.5;
+  windEl.textContent='💨 Wind: '+Math.round(windSpeed)+' mph '+(windDir>0?'→':'←');
+  state='aim';
+  showStatus('AIM');
+};
 
-function showAimUI(){aimline.style.opacity='1';powerbar.style.opacity='0';spinbar.style.opacity='0';spinlabel.style.opacity='0'}
-function showPowerUI(){aimline.style.opacity='0';powerbar.style.opacity='1';spinbar.style.opacity='0';spinlabel.style.opacity='0'}
-function showSpinUI(){aimline.style.opacity='0';powerbar.style.opacity='0';spinbar.style.opacity='1';spinlabel.style.opacity='1'}
-function hideUI(){aimline.style.opacity='0';powerbar.style.opacity='0';spinbar.style.opacity='0';spinlabel.style.opacity='0'}
+function showStatus(txt){statusEl.textContent=txt;statusEl.style.opacity=txt?'1':'0'}
 
 function doSwing(){
-  if(state==='aim'){state='power';powerLevel=0;powerDir=1;showPowerUI()}
-  else if(state==='power'){state='spin';spinLevel=0;spinDir=1;showSpinUI()}
-  else if(state==='spin'){launch()}
+  if(state==='aim'){
+    state='power';powerLevel=0;powerDir=1;
+    showStatus('POWER');
+  }else if(state==='power'){
+    state='spin';spinLevel=0;spinDir=1;
+    powerbar.style.opacity='0';
+    spinbar.style.opacity='1';spinlabel.style.opacity='1';
+    showStatus('SPIN');
+  }else if(state==='spin'){
+    state='fly';stroke++;
+    hudStroke.textContent='Stroke: '+stroke;
+    spinbar.style.opacity='0';spinlabel.style.opacity='0';
+    showStatus('');
+    
+    const speed=powerLevel*12+4;
+    ball.vx=Math.sin(aimAngle)*speed;
+    ball.vy=-Math.cos(aimAngle)*speed;
+    const spinForce=(spinLevel-.5)*3;
+    ball.vx+=spinForce;
+    trail=[];
+  }
 }
-swingbtn.addEventListener('click',doSwing);
-swingbtn.addEventListener('touchstart',e=>{e.preventDefault();doSwing()});
-document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();doSwing()}});
 
-function launch(){
-  hideUI();
-  state='fly';stroke++;
-  hudStroke.textContent='Stroke: '+stroke;
-  const speed=powerLevel*12+3;
-  const spinForce=(spinLevel-.5)*3;
-  ball.vx=Math.sin(aimAngle)*speed;
-  ball.vy=-Math.cos(aimAngle)*speed;
-  ball.spin=spinForce;
-  ball.rolling=false;
-  trail=[];
+swingbtn.addEventListener('click',doSwing);
+swingbtn.addEventListener('touchstart',function(e){e.preventDefault();doSwing()},{passive:false});
+document.addEventListener('keydown',function(e){if(e.code==='Space'){e.preventDefault();doSwing()}});
+
+function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2)}
+function onGreen(p){return p.x>green.x&&p.x<green.x+green.w&&p.y>green.y&&p.y<green.y+green.h}
+function onSand(p){return sand.some(s=>p.x>s.x&&p.x<s.x+s.w&&p.y>s.y&&p.y<s.y+s.h)}
+function onWater(p){return water.some(w=>p.x>w.x&&p.x<w.x+w.w&&p.y>w.y&&p.y<w.y+w.h)}
+
+function showResult(text){
+  setTimeout(function(){
+    overlay.querySelector('h1').textContent='⛳ Hole Complete!';
+    overlay.querySelector('p').textContent=text;
+    startBtn.textContent='Play Again';
+    overlay.style.display='flex';
+    state='menu';
+    startBtn.onclick=function(){
+      overlay.style.display='none';
+      resetBall();stroke=0;
+      hudStroke.textContent='Stroke: 0';
+      windSpeed=2+Math.random()*8;windDir=(Math.random()-.5)*.5;
+      windEl.textContent='💨 Wind: '+Math.round(windSpeed)+' mph '+(windDir>0?'→':'←');
+      state='aim';showStatus('AIM');
+      startBtn.textContent='Tee Off';
+    };
+  },800);
 }
 
 function update(){
   if(state==='aim'){
-    aimAngle+=aimDir*aimSpeed;
-    if(aimAngle>.8)aimDir=-1;if(aimAngle<-.8)aimDir=1;
-    aimneedle.style.top=(50-aimAngle*50)+'%';
+    aimAngle+=aimDir*.03;
+    if(aimAngle>.7)aimDir=-1;if(aimAngle<-.7)aimDir=1;
+    powerbar.style.opacity='0';
   }
   if(state==='power'){
-    powerLevel+=powerDir*powerSpeed;
+    powerLevel+=powerDir*.022;
     if(powerLevel>=1){powerLevel=1;powerDir=-1}
     if(powerLevel<=0){powerLevel=0;powerDir=1}
     powerfill.style.height=(powerLevel*100)+'%';
+    powerbar.style.opacity='1';
   }
   if(state==='spin'){
-    spinLevel+=spinDir*spinSpeed;
+    spinLevel+=spinDir*.03;
     if(spinLevel>=1){spinLevel=1;spinDir=-1}
     if(spinLevel<=0){spinLevel=0;spinDir=1}
-    spinneedle.style.left=(spinLevel*100)+'%';
+    spinneedle.style.left=(spinLevel*96+2)+'%';
   }
   if(state==='fly'){
     trail.push({x:ball.x,y:ball.y});
-    if(trail.length>30)trail.shift();
-    ball.vy+=.15; // gravity
-    ball.vx+=windAngle*windSpeed*.003;
-    ball.vx+=ball.spin*.02;
-    ball.x+=ball.vx;ball.y+=ball.vy;
-    // Ground check
-    if(ball.y>=flag.y-5&&distTo(ball,flag)<14){
-      ball.inHole=true;state='done';hideUI();
-      const score=stroke-HOLE.par;
-      const names={'-3':'Albatross! 🦅','-2':'Eagle! 🦅','-1':'Birdie! 🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey','3':'Triple Bogey'};
-      resultText=(names[score]||'+'+score+' Over')+' ('+stroke+' strokes)';
-      resultTimer=0;showResult();return;
+    if(trail.length>40)trail.shift();
+    
+    ball.vy+=.15;
+    ball.vx+=windDir*windSpeed*.002;
+    ball.x+=ball.vx;
+    ball.y+=ball.vy;
+    
+    // Check hole
+    if(dist(ball,flag)<12&&Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy)<6){
+      const s=stroke-4;
+      const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
+      state='done';showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
     }
-    if(ball.y>=600||ball.x<10||ball.x>390||ball.y<10){
-      state='roll';ball.rolling=true;ball.vy=0;
-      // Check hazards
-      for(const w of water){
-        if(ball.x>w.x&&ball.x<w.x+w.w&&ball.y>w.y&&ball.y<w.y+w.h){
-          state='done';hideUI();
-          resultText='💧 Water Hazard! +1 penalty';
-          stroke++;hudStroke.textContent='Stroke: '+stroke;resultTimer=0;showResult();return;
-        }
-      }
-    }
-    // Tree collision
+    
+    // Tree bounce
     for(const t of trees){
-      if(distTo(ball,t)<t.r){
-        ball.vx*=-.3;ball.vy*=-.3;
-        ball.x+=ball.vx;ball.y+=ball.vy;
-        state='roll';ball.rolling=true;ball.vy=0;break;
+      if(dist(ball,t)<t.r+4){
+        ball.vx*=-.4;ball.vy*=-.3;
+        ball.x+=ball.vx*2;ball.y+=ball.vy*2;
+        break;
       }
+    }
+    
+    // Ground hit
+    if(ball.vy>0&&ball.y>=flag.y-10){
+      state='roll';ball.vy=0;
+    }
+    // OB check
+    if(ball.x<-10||ball.x>410||ball.y<0||ball.y>680){
+      state='roll';ball.vy=0;
     }
   }
   if(state==='roll'){
-    const friction=isOnGreen(ball)?0.96:isOnSand(ball)?0.92:0.975;
-    ball.vx*=friction;ball.vy*=friction;
+    const f=onGreen(ball)?.955:onSand(ball)?.91:.972;
+    ball.vx*=f;ball.vy*=f;
     ball.x+=ball.vx;ball.y+=ball.vy;
+    
+    // Water check
+    if(onWater(ball)){
+      stroke++;hudStroke.textContent='Stroke: '+stroke;
+      state='done';showResult('💧 Water Hazard! +1 penalty — '+stroke+' strokes');return;
+    }
     // Hole check
-    if(distTo(ball,flag)<14&&Math.abs(ball.vx)+Math.abs(ball.vy)<4){
-      ball.inHole=true;state='done';hideUI();
-      const score=stroke-HOLE.par;
-      const names={'-3':'Albatross! 🦅','-2':'Eagle! 🦅','-1':'Birdie! 🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey','3':'Triple Bogey'};
-      resultText=(names[score]||'+'+score+' Over')+' ('+stroke+' strokes)';
-      resultTimer=0;showResult();return;
+    if(dist(ball,flag)<12&&Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy)<5){
+      const s=stroke-4;
+      const n={'-3':'Albatross!🦅','-2':'Eagle!🦅','-1':'Birdie!🐦','0':'Par 👏','1':'Bogey','2':'Double Bogey'};
+      state='done';showResult((n[s]||'+'+stroke)+' — '+stroke+' strokes');return;
     }
-    if(Math.abs(ball.vx)<.05&&Math.abs(ball.vy)<.05){
+    // Stopped
+    if(Math.abs(ball.vx)<.04&&Math.abs(ball.vy)<.04){
       ball.vx=0;ball.vy=0;
-      if(ball.y>=600||ball.x<10||ball.x>390||ball.y<10){
-        state='done';hideUI();resultText='Out of Bounds! +1 penalty';
-        stroke++;hudStroke.textContent='Stroke: '+stroke;resultTimer=0;showResult();return;
+      if(ball.x<0||ball.x>400||ball.y>670||ball.y<0){
+        stroke++;hudStroke.textContent='Stroke: '+stroke;
+        state='done';showResult('Out of Bounds! +1 penalty — '+stroke+' strokes');return;
       }
-      state='aim';showAimUI();
+      state='aim';showStatus('AIM');
     }
   }
-  // Distance
   if(state!=='menu'&&state!=='done'){
-    const d=Math.round(distTo(ball,flag)*.5);
-    hudDist.textContent=d+' yds';
+    hudDist.textContent=Math.round(dist(ball,flag)*.5)+' yds';
   }
 }
-
-function showResult(){
-  resultTimer=Date.now();
-  setTimeout(()=>{
-    if(stroke>=8){overlay.querySelector('h1').textContent='Game Over';overlay.querySelector('p').textContent=resultText+'\nMax strokes reached.';overlay.querySelector('button').textContent='Retry';overlay.style.display='flex';state='menu'}
-    else{overlay.querySelector('h1').textContent='Nice Shot!';overlay.querySelector('p').textContent=resultText;overlay.querySelector('button').textContent='Next Shot';overlay.style.display='flex';state='menu';startGame=nextShot}
-  },2000);
-}
-
-function nextShot(){
-  overlay.style.display='none';
-  ball.x=ball.inHole?tee.x:ball.x;
-  ball.y=ball.inHole?tee.y:ball.y;
-  if(ball.inHole){ball.x=tee.x;ball.y=tee.y;stroke=0}
-  ball.vx=0;ball.vy=0;ball.inHole=false;
-  state='aim';showAimUI();
-  overlay.querySelector('h1').textContent='⛳ Speedy Golf';
-  overlay.querySelector('p').innerHTML='3-click swing: Aim → Power → Spin<br>Tap SWING or press SPACE';
-  overlay.querySelector('button').textContent='Tee Off';
-  startGame=originalStart;
-}
-
-let originalStart=startGame;
-
-function distTo(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2)}
-function isOnGreen(p){return p.x>green.x&&p.x<green.x+green.w&&p.y>green.y&&p.y<green.y+green.h}
-function isOnSand(p){for(const s of sand){if(p.x>s.x&&p.x<s.x+s.w&&p.y>s.y&&p.y<s.y+s.h)return true}return false}
 
 function draw(){
   X.clearRect(0,0,W,H);
-  X.save();
-  const ox=(W-400*scale)/2,oy=(H-700*scale)/2;
-  X.translate(ox,oy);X.scale(scale,scale);
-
-  // Sky
-  X.fillStyle='#87CEEB';X.fillRect(0,0,400,700);
+  const sc=Math.min(W/400,H/700);
+  const ox=(W-400*sc)/2,oy=(H-700*sc)/2;
+  X.save();X.translate(ox,oy);X.scale(sc,sc);
   
-  // Rough (dark green base)
-  X.fillStyle='#2d5a27';X.fillRect(0,0,400,700);
-  
+  // Rough
+  X.fillStyle='#2d5a27';X.fillRect(-10,-10,420,720);
   // Fairway
   X.fillStyle='#4a8c3f';
   fairway.forEach(f=>X.fillRect(f.x,f.y,f.w,f.h));
-  
-  // Sand traps
+  // Sand
   X.fillStyle='#e8d68c';
   sand.forEach(s=>{X.beginPath();X.ellipse(s.x+s.w/2,s.y+s.h/2,s.w/2,s.h/2,0,0,Math.PI*2);X.fill()});
-  
   // Water
   X.fillStyle='#3b82f6';
-  water.forEach(w=>{X.beginPath();X.ellipse(w.x+w.w/2,w.y+w.h/2,w.w/2,w.h/2,0,0,Math.PI*2);X.fill();X.strokeStyle='#60a5fa';X.lineWidth=1.5;X.stroke()});
-  
+  water.forEach(w=>{X.beginPath();X.ellipse(w.x+w.w/2,w.y+w.h/2,w.w/2,w.h/2,0,0,Math.PI*2);X.fill()});
   // Green
   X.fillStyle='#5cb85c';X.fillRect(green.x,green.y,green.w,green.h);
   X.strokeStyle='#4a9e4a';X.lineWidth=2;X.strokeRect(green.x,green.y,green.w,green.h);
-  
   // Hole
   X.fillStyle='#111';X.beginPath();X.arc(flag.x,flag.y,8,0,Math.PI*2);X.fill();
-  
   // Flag
   X.strokeStyle='#fff';X.lineWidth=2;X.beginPath();X.moveTo(flag.x,flag.y);X.lineTo(flag.x,flag.y-35);X.stroke();
-  X.fillStyle='#ef4444';X.beginPath();X.moveTo(flag.x,flag.y-35);X.lineTo(flag.x+18,flag.y-28);X.lineTo(flag.x,flag.y-20);X.fill();
-  
-  // Tee box
+  X.fillStyle='#ef4444';X.beginPath();X.moveTo(flag.x,flag.y-35);X.lineTo(flag.x+18,flag.y-28);X.lineTo(flag.x,flag.y-21);X.fill();
+  // Tee
   X.fillStyle='#8B7355';X.fillRect(tee.x-25,tee.y-5,50,10);
-  X.strokeStyle='#fff';X.lineWidth=1;X.setLineDash([3,3]);X.strokeRect(tee.x-20,tee.y-3,40,6);X.setLineDash([]);
-  
   // Trees
   trees.forEach(t=>{
-    X.fillStyle='#3d2b1f';X.fillRect(t.x-2,t.y,4,t.r);
+    X.fillStyle='#3d2b1f';X.fillRect(t.x-3,t.y+5,6,t.r);
     X.fillStyle='#2d7a2d';X.beginPath();X.arc(t.x,t.y,t.r,0,Math.PI*2);X.fill();
-    X.fillStyle='#1a5a1a';X.beginPath();X.arc(t.x-3,t.y-2,t.r*.6,0,Math.PI*2);X.fill();
+    X.fillStyle='#1f6b1f';X.beginPath();X.arc(t.x-3,t.y-3,t.r*.55,0,Math.PI*2);X.fill();
   });
-  
   // Trail
   if(trail.length>1){
-    X.strokeStyle='rgba(255,255,255,.3)';X.lineWidth=1;X.beginPath();
-    trail.forEach((p,i)=>{i===0?X.moveTo(p.x,p.y):X.lineTo(p.x,p.y)});
-    X.stroke();
+    X.strokeStyle='rgba(255,255,255,.25)';X.lineWidth=1;X.setLineDash([3,3]);
+    X.beginPath();trail.forEach((p,i)=>{i?X.lineTo(p.x,p.y):X.moveTo(p.x,p.y)});X.stroke();X.setLineDash([]);
   }
-  
   // Ball
-  if(!ball.inHole){
+  if(state!=='menu'&&state!=='done'){
     X.fillStyle='#fff';X.beginPath();X.arc(ball.x,ball.y,6,0,Math.PI*2);X.fill();
-    X.strokeStyle='#ccc';X.lineWidth=1;X.stroke();
-    // Dimple detail
-    X.fillStyle='#eee';X.beginPath();X.arc(ball.x-1,ball.y-1,2,0,Math.PI*2);X.fill();
+    X.strokeStyle='#ddd';X.lineWidth=1;X.stroke();
   }
-  
-  // Aim line (show during aim state)
+  // Aim arrow
   if(state==='aim'){
-    X.strokeStyle='rgba(255,255,255,.4)';X.lineWidth=1;X.setLineDash([4,4]);
+    X.strokeStyle='rgba(255,255,255,.5)';X.lineWidth=2;X.setLineDash([5,5]);
     X.beginPath();X.moveTo(ball.x,ball.y);
-    const len=60;
-    X.lineTo(ball.x+Math.sin(aimAngle)*len,ball.y-Math.cos(aimAngle)*len);
-    X.stroke();X.setLineDash([]);
-    // Arrow head
-    const ax=ball.x+Math.sin(aimAngle)*len,ay=ball.y-Math.cos(aimAngle)*len;
-    X.fillStyle='rgba(255,255,255,.6)';X.beginPath();X.arc(ax,ay,3,0,Math.PI*2);X.fill();
+    const len=70;
+    X.lineTo(ball.x+Math.sin(aimAngle)*len,ball.y-Math.cos(aimAngle)*len);X.stroke();X.setLineDash([]);
+    X.fillStyle='rgba(255,255,255,.7)';X.beginPath();
+    X.arc(ball.x+Math.sin(aimAngle)*len,ball.y-Math.cos(aimAngle)*len,4,0,Math.PI*2);X.fill();
   }
-  
   X.restore();
 }
 
@@ -309,10 +287,6 @@ function loop(){
   if(state!=='menu'){update();draw()}
   requestAnimationFrame(loop);
 }
-
-resize();
-setupCourse();
-draw();
 loop();
 </script>
 </body>
