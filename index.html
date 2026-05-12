@@ -42,10 +42,12 @@ canvas{display:block}
   <div class="cb" id="c3" onclick="pickClub(3)">Putter<br><small>30yd</small></div>
 </div>
 <div id="btn" onclick="swing()">🏌️<br>SWING</div>
-<div id="ov"><h1>⛳ Speedy Golf</h1><p>3-click swing: Aim → Power → Spin<br>Then run after your ball!</p><button onclick="teeOff()">Tee Off</button></div>
+<div id="ov"><h1>⛳ Speedy Golf</h1><p>3-click swing: Aim → Power → Spin<br>Then run after your ball!</p><button id="teeBtn" onclick="teeOff()">Tee Off</button></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+if(typeof THREE==='undefined'){document.body.innerHTML='<div style="color:#fff;padding:40px;text-align:center;font-family:sans-serif"><h2>Loading error</h2><p>Three.js failed to load. Please refresh.</p></div>';throw new Error('Three.js missing');}
+
 // --- SCENE ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87CEEB);
